@@ -15,11 +15,25 @@
 package cmd
 
 import (
+	"errors"
 	"fmt"
+	"log"
 
+	"github.com/koolay/scmt/parse"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
+
+var langMap = map[string]string{"php": ".php"}
+
+func NewParser(lang string) (parse.Parser, error) {
+	switch lang {
+	case "php":
+		return new(parse.PhpParser), nil
+	default:
+		return nil, errors.New("do not support language:" + lang)
+	}
+}
 
 // createCmd represents the create command
 var createCmd = &cobra.Command{
@@ -27,10 +41,37 @@ var createCmd = &cobra.Command{
 	Short: "Output json of swagger from special file or directinary",
 	Long:  `Output json of swagger from special file or directinary.`,
 	Run: func(cmd *cobra.Command, args []string) {
-		sources := viper.Get("sources")
-		for _, path := range sources.([]string) {
-			fmt.Printf("path is %s \n", path)
+		sources := viper.Get("sources").([]string)
+		if len(sources) == 0 {
+			fmt.Println("No sources.")
+			return
 		}
+		lang := viper.Get("lang").(string)
+		ext := langMap[lang]
+		if ext == "" {
+			log.Fatal("do not support the language: " + lang)
+			return
+		} else {
+			_, err := NewParser(lang)
+			if err == nil {
+				log.Println("start read " + ext + "...")
+				for _, source := range sources {
+					log.Println("read " + source)
+					if texts, err := parse.ReadFiles(source, ext); err == nil {
+						for filename, txt := range texts {
+							fmt.Printf("process %s \n", filename)
+							fmt.Println(txt)
+						}
+					} else {
+						log.Fatal(err.Error())
+					}
+
+				}
+			} else {
+				log.Fatal(err.Error())
+			}
+		}
+
 		fmt.Println("create called")
 	},
 }

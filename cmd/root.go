@@ -15,6 +15,7 @@
 package cmd
 
 import (
+	"errors"
 	"fmt"
 	"os"
 
@@ -25,6 +26,7 @@ import (
 var (
 	sources []string
 	cfgFile string
+	lang    string
 )
 
 // RootCmd represents the base command when called without any subcommands
@@ -58,6 +60,7 @@ func init() {
 
 	RootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is $HOME/.scmt.yaml)")
 	RootCmd.PersistentFlags().StringArrayVarP(&sources, "sources", "s", nil, "full path of special directory or file")
+	RootCmd.PersistentFlags().StringVarP(&lang, "language", "l", "", "language, php,pytho,go etc.")
 
 	// Cobra also supports local flags, which will only run
 	// when this action is called directly.
@@ -73,12 +76,27 @@ func initConfig() {
 	viper.AddConfigPath("$HOME") // adding home directory as first search path
 	viper.AutomaticEnv()         // read in environment variables that match
 
-	if sources != nil {
-		viper.Set("sources", sources)
+	if err := verifyArgs(); err != nil {
+		fmt.Println(err.Error())
+		os.Exit(0)
 	}
+	viper.Set("sources", sources)
+	viper.Set("lang", lang)
 
 	// If a config file is found, read it in.
 	if err := viper.ReadInConfig(); err == nil {
 		fmt.Println("Using config file:", viper.ConfigFileUsed())
 	}
+}
+
+func verifyArgs() error {
+
+	if sources == nil {
+		return errors.New("Miss args of sources")
+	}
+
+	if lang == "" {
+		return errors.New("Miss args of lang")
+	}
+	return nil
 }

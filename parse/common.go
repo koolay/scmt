@@ -1,16 +1,17 @@
 package parse
 
 import (
+	"fmt"
+	"io/ioutil"
 	"log"
 	"os"
-	"path"
 	"path/filepath"
 
 	"github.com/go-openapi/spec"
 )
 
 type Parser interface {
-	parseComment(comment string) spec.PathItem
+	ParseComment(comment string) spec.PathItem
 }
 
 func recursiveFindFiles(root string, pattern string) ([]string, error) {
@@ -34,27 +35,40 @@ func recursiveFindFiles(root string, pattern string) ([]string, error) {
 	}
 }
 
-func readFiles(paths []string, ext string) []string {
-	var rtv []string
+func ReadFiles(source string, ext string) (map[string]string, error) {
+	rtv := make(map[string]string)
 	if ext == "" {
-		return rtv
+		return rtv, nil
 	}
 
-	var files []string
-	if paths != nil {
-		for _, p := range paths {
-			if info, err := os.Stat(p); os.IsNotExist(err) {
-				log.Fatalf("path: %s not exist \n", p)
-			} else if info.IsDir() {
-				files = apend(files, recursiveFindFiles(p, ext))
-			} else {
-				if ext != path.Ext(p) {
-					log.Printf("invalid ext: %s", path.Ext(p))
-					continue
-				}
+	files := []string{}
 
-			}
+	pattern := fmt.Sprintf("*%s", ext)
+	info, err := os.Stat(source)
+	if os.IsNotExist(err) {
+		log.Println(err.Error())
+		return rtv, err
+	} else if info.IsDir() {
+		fmt.Printf("start search dir: %s, match: %s \n", source, pattern)
+		foundFiles, err := recursiveFindFiles(source, pattern)
+		if err == nil {
+			files = append(files, foundFiles...)
+		} else {
+			return rtv, err
+		}
+	} else {
+		files = append(files, source)
+	}
 
+	for _, f := range files {
+		fmt.Printf("read file: %s \n", f)
+		content, err := ioutil.ReadFile(f)
+		if err == nil {
+			rtv[f] = string(content[:])
+		} else {
+			return rtv, err
 		}
 	}
+
+	return rtv, nil
 }
