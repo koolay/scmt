@@ -1,0 +1,24 @@
+{
+    "result": {
+        "type": "boolean",
+        "description": "good",
+    },
+    "msg": {
+        "type": "boolean",
+        "description": "message",
+    },
+    "data": {
+        "type": "object",
+        "proerties": {
+            "id": {
+                "type": "string",
+                "description": "id"
+            },
+            "title": {
+                "type": "string",
+                "description": "title"
+            }
+        }
+    }
+
+}

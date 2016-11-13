@@ -52,20 +52,12 @@ var createCmd = &cobra.Command{
 			log.Fatal("do not support the language: " + lang)
 			return
 		} else {
-			_, err := NewParser(lang)
+			parser, err := NewParser(lang)
 			if err == nil {
 				log.Println("start read " + ext + "...")
 				for _, source := range sources {
 					log.Println("read " + source)
-					if texts, err := parse.ReadFiles(source, ext); err == nil {
-						for filename, txt := range texts {
-							fmt.Printf("process %s \n", filename)
-							fmt.Println(txt)
-						}
-					} else {
-						log.Fatal(err.Error())
-					}
-
+					parser.Parse(source)
 				}
 			} else {
 				log.Fatal(err.Error())

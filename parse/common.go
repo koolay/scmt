@@ -2,16 +2,53 @@ package parse
 
 import (
 	"fmt"
-	"io/ioutil"
 	"log"
 	"os"
 	"path/filepath"
+	"regexp"
 
 	"github.com/go-openapi/spec"
 )
 
+var reCommentBlock = regexp.MustCompile(`/\*(.|[\r\n])*?\*/`)
+var reApi = regexp.MustCompile(`@api\s\{(?P<method>\w+)\}\s+(?P<path>(/[^\s]+)+)(\s(?P<title>[^\*\r\n]+))?`)
+
 type Parser interface {
-	ParseComment(comment string) spec.PathItem
+	Parse(source string) []spec.PathItem
+}
+
+type Api struct {
+	Method string
+	Path   string
+	Title  string
+}
+
+type Param struct {
+	group         string
+	Type          string
+	Size          string
+	AllowedValues []string
+	Optional      bool
+	Field         string
+	DefaultValue  string
+	Description   string
+}
+
+func parseApi(sourceCode string) Api {
+
+	result := matchGroup(reApi, sourceCode)
+	return Api{Path: result["path"], Title: result["title"], Method: result["method"]}
+}
+
+func matchGroup(re *regexp.Regexp, text string) map[string]string {
+	match := re.FindStringSubmatch(text)
+	result := make(map[string]string)
+	for i, name := range re.SubexpNames() {
+		if i != 0 {
+			result[name] = match[i]
+		}
+	}
+	return result
 }
 
 func recursiveFindFiles(root string, pattern string) ([]string, error) {
@@ -35,40 +72,32 @@ func recursiveFindFiles(root string, pattern string) ([]string, error) {
 	}
 }
 
-func ReadFiles(source string, ext string) (map[string]string, error) {
-	rtv := make(map[string]string)
-	if ext == "" {
-		return rtv, nil
-	}
+// find files from folder
+func findFiles(source string, ext string) ([]string, error) {
 
 	files := []string{}
+	if ext == "" {
+		return files, nil
+	}
 
 	pattern := fmt.Sprintf("*%s", ext)
 	info, err := os.Stat(source)
 	if os.IsNotExist(err) {
 		log.Println(err.Error())
-		return rtv, err
+		return files, err
 	} else if info.IsDir() {
 		fmt.Printf("start search dir: %s, match: %s \n", source, pattern)
 		foundFiles, err := recursiveFindFiles(source, pattern)
 		if err == nil {
 			files = append(files, foundFiles...)
-		} else {
-			return rtv, err
 		}
 	} else {
 		files = append(files, source)
 	}
+	return files, err
 
-	for _, f := range files {
-		fmt.Printf("read file: %s \n", f)
-		content, err := ioutil.ReadFile(f)
-		if err == nil {
-			rtv[f] = string(content[:])
-		} else {
-			return rtv, err
-		}
-	}
+}
 
-	return rtv, nil
+func parseComments(sourceCode string) []string {
+	return reCommentBlock.FindAllString(sourceCode, -1)
 }
