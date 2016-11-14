@@ -46,9 +46,12 @@ type Response struct {
 	Content string
 }
 
-func parseApi(sourceCode string) Api {
+func parseApi(sourceCode string) (Api, error) {
 	result := matchGroup(reApi, sourceCode)
-	return Api{Path: result["path"], Title: result["title"], Method: result["method"]}
+	if len(result) == 0 {
+		return Api{}, &ParseError{}
+	}
+	return Api{Path: result["path"], Title: result["title"], Method: result["method"]}, nil
 }
 
 func parseApiVersion(sourceCode string) string {
@@ -155,8 +158,11 @@ func parseResponse(commentBlock string) []Response {
 }
 
 func matchGroup(re *regexp.Regexp, text string) map[string]string {
-	match := re.FindStringSubmatch(text)
 	result := make(map[string]string)
+	match := re.FindStringSubmatch(text)
+	if len(match) < 2 {
+		return result
+	}
 	for i, name := range re.SubexpNames() {
 		if i != 0 {
 			result[name] = match[i]

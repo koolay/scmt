@@ -1,5 +1,18 @@
 <?php
 
+
+/**
+ * @param index string
+ * @param id int
+ * @return object
+ *
+ */
+function help($param)
+{
+    return null;
+}
+
+
 /**
  * @apiVersion 1.0.0
  * @api {get} /user/auth/login user login

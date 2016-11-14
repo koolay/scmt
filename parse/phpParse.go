@@ -26,7 +26,13 @@ func (parser *PhpParser) Parse(source string) []spec.PathItem {
 				sourceCode := string(content[:])
 				comments := parseComments(sourceCode)
 				for _, comment := range comments {
-					//api := parseApi(comment)
+					api, err := parseApi(comment)
+					if err != nil {
+						fmt.Println("invalid api")
+						continue
+					} else {
+						fmt.Println(api)
+					}
 					apiName := parseApiName(comment)
 					apiVersion := parseApiVersion(comment)
 					params := parseApiParam(comment)
