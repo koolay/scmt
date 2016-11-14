@@ -3,6 +3,7 @@ package parse
 import (
 	"fmt"
 	"io/ioutil"
+	"strconv"
 
 	"github.com/go-openapi/spec"
 )
@@ -25,8 +26,20 @@ func (parser *PhpParser) Parse(source string) []spec.PathItem {
 				sourceCode := string(content[:])
 				comments := parseComments(sourceCode)
 				for _, comment := range comments {
-					api := parseApi(comment)
-					fmt.Println(api)
+					//api := parseApi(comment)
+					apiName := parseApiName(comment)
+					apiVersion := parseApiVersion(comment)
+					params := parseApiParam(comment)
+					responses := parseResponse(comment)
+
+					fmt.Println("---- response -----")
+					for _, resp := range responses {
+						fmt.Printf("code: %s, content: %s \n", strconv.Itoa(resp.Code), resp.Content)
+					}
+					fmt.Println("----response end -----")
+
+					fmt.Printf("apiName: %s, apiVersion: %s \n", apiName, apiVersion)
+					fmt.Println(params)
 				}
 			}
 		}

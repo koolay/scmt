@@ -4,8 +4,9 @@
  * @apiVersion 1.0.0
  * @api {get} /user/auth/login user login
  * @apiName home page
- * @apiParam { int } id required default
- * @apiParam { name } string required
+ * @apiParam {integer{100-200}} id=123 id of user
+ * @apiParam {string{..5}} [name=abc]
+ * @apiParam {string{20..}} [title="good title"] title of article
  * @apiResponseRef /fixture/result.json
  * @apiResponse 200 {
  *  "result": true,
@@ -35,8 +36,8 @@ function actionIndex($id, $name)
  * @apiVersion 1.0.0
  * @api {get} /user/:id  get user
  * @apiName get username
- * @apiParam { int } id required default
- * @apiParam { name } string required
+ * @apiParam { integer } id
+ * @apiParam { string } [name]
  * @apiResponseRef /fixture/result.json
  * @apiResponse 200 {
  *  "result": true,
