@@ -37,7 +37,7 @@ type Param struct {
 	Size         string
 	Optional     bool
 	Field        string
-	DefaultValue string
+	DefaultValue interface{}
 	Description  string
 }
 
@@ -95,7 +95,7 @@ func parseApiParam(commentBlock string) []*Param {
 			param.Description = match["description"]
 			optional := false
 			var paramName string
-			var defaultValue string
+			var defaultValue interface{}
 
 			if fieldString == "" {
 				log.Fatal("parse field failed! source: \n %s \n", commentBlock)
@@ -107,7 +107,11 @@ func parseApiParam(commentBlock string) []*Param {
 
 			matchFieldItems := matchGroup(reApiParamFieldGroup, fieldString)
 			paramName = matchFieldItems["paramName"]
-			defaultValue = matchFieldItems["default"]
+			if matchFieldItems["default"] == "" {
+				defaultValue = nil
+			} else {
+				defaultValue = matchFieldItems["default"]
+			}
 			if strings.HasPrefix(fieldString, "[") {
 				optional = true
 			}

@@ -24,16 +24,16 @@ function help($param)
  * @apiResponse 200 {
  *  "result": true,
  *  "msg": "abc",
- *  "items": ["aa", "bc"]
- *  "items": [{"id": 123, "title": "this is good"}]
+ *  "extra": ["aa", "bc"],
+ *  "complex": [{"id": 123, "title": "this is good"}],
  *  "data": {"id": "12312312", "abc": "very good"}
  * }
  *
  * @apiResponse 403 {
  *  "result": true,
  *  "msg": "abc",
- *  "items": ["aa", "bc"]
- *  "items": [{"id": 123, "title": "this is good"}]
+ *  "extr": ["aa", "bc"],
+ *  "complex": [{"id": 123, "title": "this is good"}],
  *  "data": {"id": "12312312", "abc": "very good"}
  * }
  *
@@ -55,18 +55,18 @@ function actionIndex($id, $name)
  * @apiResponse 200 {
  *  "result": true,
  *  "msg": "abc",
- *  "items": ["aa", "bc"]
- *  "items": [{"id": 123, "title": "this is good"}]
+ *  "items": ["aa", "bc"],
+ *  "items": [{"id": 123, "title": "this is good"}],
  *  "data": {"id": "12312312", "abc": "very good"}
  * }
  *
- * @apiResponse 403 {
+ * @apiResponse 403 [{
  *  "result": true,
  *  "msg": "abc",
- *  "items": ["aa", "bc"]
- *  "items": [{"id": 123, "title": "this is good"}]
+ *  "items": ["aa", "bc"],
+ *  "items": [{"id": 123, "title": "this is good"}],
  *  "data": {"id": "12312312", "abc": "very good"}
- * }
+ * }]
  *
  */
 function actionUser()
