@@ -18,9 +18,9 @@ var reApiName = regexp.MustCompile(`@apiName\s+(?P<name>[^\r\n]+)`)
 var reApiVersion = regexp.MustCompile(`@apiVersion\s+(?P<name>[^\r\n]+)`)
 var reApiParam = regexp.MustCompile(`@apiParam\s+(?P<name>[^\r\n]+)`)
 var reApiParamGroup = regexp.MustCompile(`(?P<type>\{.+\})\s+(?P<field>(\[[^\s=\[]+\=?[^\=\]]+\])|([^\s=\[]+\=?[^\s\=\]]+))(\s+(?P<descriptionoptional>[^\r\n]*))?`)
-var reApiParamTypeGroup = regexp.MustCompile(`\{\s*(?P<type>[a-z]+)(\{(?P<range>(\d+)?(-|\.+)?\d+)\})?\s*`)
+var reApiParamTypeGroup = regexp.MustCompile(`\{\s*(?P<type>[a-z]+)(\{\s*(((?P<min>\d+)?\-(?P<max>\d+)?)|((?P<short>\d+)?\.\.(?P<length>\d+)?))\s*\})?\s*\}`)
 var reApiParamFieldGroup = regexp.MustCompile(`\[?\s*(?P<paramName>[^=\s\[\]]+)(=\s*"?(?P<default>[^="\[\]]+)"?)?`)
-var reApiResponse = regexp.MustCompile(`(?ms)@apiResponse\s+(?P<responseCode>\d+)\s*(?P<content>\{.*?\*\s*\})`)
+var reApiResponse = regexp.MustCompile(`(?ms)@apiResponse\s+(?P<responseCode>\d+)(\s*(?P<content>(\{.*?\*\s*\})|(\[.*?\*\s*\])))?`)
 
 type Parser interface {
 	Parse(source string) []spec.PathItem
@@ -34,11 +34,14 @@ type Api struct {
 
 type Param struct {
 	Type         string
-	Size         string
 	Optional     bool
 	Field        string
 	DefaultValue interface{}
 	Description  string
+	MaxNum       *float64
+	MinNum       *float64
+	MaxLength    *int64
+	MinLength    *int64
 }
 
 type Response struct {
@@ -118,15 +121,28 @@ func parseApiParam(commentBlock string) []*Param {
 
 			matchTypeItems := matchGroup(reApiParamTypeGroup, typeString)
 			paramType := "string"
-			paramRange := "" // 1-2 or -2 or 1- or 1.. or 1..2 or ..2
 			if len(matchTypeItems) > 0 {
 				paramType = matchTypeItems["type"]
-				paramRange = matchTypeItems["range"]
+				if matchTypeItems["max"] != "" {
+					maxNum, _ := strconv.ParseFloat(matchTypeItems["max"], 64)
+					param.MaxNum = &maxNum
+				}
+				if matchTypeItems["min"] != "" {
+					minNum, _ := strconv.ParseFloat(matchTypeItems["min"], 64)
+					param.MinNum = &minNum
+				}
+				if matchTypeItems["short"] != "" {
+					minLength, _ := strconv.ParseInt(matchTypeItems["short"], 10, 64)
+					param.MinLength = &minLength
+				}
+				if matchTypeItems["length"] != "" {
+					maxLength, _ := strconv.ParseInt(matchTypeItems["length"], 10, 64)
+					param.MaxLength = &maxLength
+				}
 			}
 			param.DefaultValue = defaultValue
 			param.Field = paramName
 			param.Optional = optional
-			param.Size = paramRange
 			param.Type = paramType
 			rtv = append(rtv, param)
 		}

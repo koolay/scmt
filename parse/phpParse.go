@@ -35,11 +35,9 @@ func (parser *PhpParser) Parse(source string) []spec.PathItem {
 					method := strings.ToUpper(api.Method)
 					operate := spec.Operation{}
 					apiName := parseApiName(comment)
-					apiVersion := parseApiVersion(comment)
+					fmt.Println("---------process API: ", apiName, "---------")
 					params := parseApiParam(comment)
 					responses := parseResponse(comment)
-
-					fmt.Println("---- process params -----")
 
 					for _, param := range params {
 						swaggerParam := spec.Parameter{}
@@ -48,6 +46,10 @@ func (parser *PhpParser) Parse(source string) []spec.PathItem {
 						swaggerParam.Required = !param.Optional
 						swaggerParam.Name = param.Field
 						swaggerParam.Description = param.Description
+						swaggerParam.Maximum = param.MaxNum
+						swaggerParam.Minimum = param.MinNum
+						swaggerParam.MaxLength = param.MaxLength
+						swaggerParam.MinLength = param.MinLength
 						operate.AddParam(&swaggerParam)
 
 						/*
@@ -60,17 +62,20 @@ func (parser *PhpParser) Parse(source string) []spec.PathItem {
 						*/
 					}
 
-					fmt.Println("---- response -----")
 					swaggerResponses := spec.Responses{}
+					swaggerResponses.StatusCodeResponses = map[int]spec.Response{}
 					for _, resp := range responses {
 						swaggerResp := spec.Response{}
-						jsonSchemaBytes := ConvertResponseContentToJsonSchema(resp.Content)
-						swaggerResponseSchema := &spec.Schema{}
-						if err = swaggerResponseSchema.UnmarshalJSON(jsonSchemaBytes); err != nil {
-							panic(err)
+						if resp.Content != "" {
+							swaggerResponseSchema := &spec.Schema{}
+							jsonSchemaBytes := ConvertResponseContentToJsonSchema(resp.Content)
+							if err = swaggerResponseSchema.UnmarshalJSON(jsonSchemaBytes); err != nil {
+								panic(err)
+							}
+							swaggerResp.Schema = swaggerResponseSchema
+						} else {
+							swaggerResp.Schema = nil
 						}
-						swaggerResp.Schema = swaggerResponseSchema
-						swaggerResponses.StatusCodeResponses = map[int]spec.Response{}
 						swaggerResponses.StatusCodeResponses[resp.Code] = swaggerResp
 					}
 					operate.Responses = &swaggerResponses
@@ -94,16 +99,12 @@ func (parser *PhpParser) Parse(source string) []spec.PathItem {
 						panic(fmt.Sprintf("not support method: %s", method))
 					}
 
+					// apiVersion := parseApiVersion(comment)
 					if swaggerPathJsonBytes, err := swaggerPath.MarshalJSON(); err == nil {
 						fmt.Println(string(swaggerPathJsonBytes))
 					} else {
 						panic(err)
 					}
-
-					fmt.Println("----response end -----")
-
-					fmt.Printf("apiName: %s, apiVersion: %s \n", apiName, apiVersion)
-					fmt.Println(params)
 				}
 			}
 		}

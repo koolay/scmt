@@ -27,15 +27,12 @@ function help($param)
  *  "extra": ["aa", "bc"],
  *  "complex": [{"id": 123, "title": "this is good"}],
  *  "data": {"id": "12312312", "abc": "very good"}
- * }
+ * } //must new line
  *
- * @apiResponse 403 {
- *  "result": true,
- *  "msg": "abc",
- *  "extr": ["aa", "bc"],
- *  "complex": [{"id": 123, "title": "this is good"}],
- *  "data": {"id": "12312312", "abc": "very good"}
- * }
+ * @apiResponse 401 {
+ *  "result": false,
+ *  "msg": "Not Allow"
+ * }//must new line
  *
  */
 function actionIndex($id, $name)
@@ -58,19 +55,44 @@ function actionIndex($id, $name)
  *  "items": ["aa", "bc"],
  *  "items": [{"id": 123, "title": "this is good"}],
  *  "data": {"id": "12312312", "abc": "very good"}
- * }
+ * }//must new line
  *
  * @apiResponse 403 [{
  *  "result": true,
- *  "msg": "abc",
- *  "items": ["aa", "bc"],
- *  "items": [{"id": 123, "title": "this is good"}],
- *  "data": {"id": "12312312", "abc": "very good"}
- * }]
+ *  "msg": "not a object",
+ *  "items": [{"id": 123, "title": "this is good"}]
+ * }
+ * ]//must new line
  *
  */
 function actionUser()
 {
+    return null;
+}
+
+
+/**
+ *
+ * @apiVersion 1.0.1
+ * @api {post} /content/:id update
+ * @apiName update user
+ * @apiParam id
+ * @apiParam name
+ * @apiParam { integer } age=18
+ * @apiResponse 201
+ *
+ * @apiResponse 401 {
+ *  "result": false,
+ *  "msg": "NotAuthorization"
+ * }//must new line
+ */
+function actionNoContent($param)
+{
+    if ($param == null) {
+        return "aa";
+    } else {
+        return "111";
+    }
     return null;
 }
 
