@@ -15,31 +15,20 @@
 package cmd
 
 import (
-	"errors"
 	"fmt"
 	"os"
 
 	"github.com/spf13/cobra"
-	"github.com/spf13/viper"
-)
-
-var (
-	sources []string
-	cfgFile string
-	// language php, python ..
-	lang string
-	// where to output
-	output []string
-	// name of swagger
-	name    string
-	version string
 )
 
 // RootCmd represents the base command when called without any subcommands
 var RootCmd = &cobra.Command{
 	Use:   "scmt",
-	Short: "Generate swagger doc from comments of API",
-	Long:  `scmt is a tool for generate swagger doc from standard comments of API writen by php,python,golang etc.`,
+	Short: "Tools for swagger",
+	Long: `scmt is a tool for swagger openapi.
+	 1.Generate swagger doc from standard comments of API writen by php,python,golang etc.
+	 2.validate swagger json form url.
+	 `,
 	// Uncomment the following line if your bare application
 	// has an action associated with it:
 	//Run: func(cmd *cobra.Command, args []string) {
@@ -50,7 +39,6 @@ var RootCmd = &cobra.Command{
 // Execute adds all child commands to the root command sets flags appropriately.
 // This is called by main.main(). It only needs to happen once to the rootCmd.
 func Execute() {
-	fmt.Println("main execute ..")
 	if err := RootCmd.Execute(); err != nil {
 		fmt.Println(err)
 		os.Exit(-1)
@@ -58,62 +46,4 @@ func Execute() {
 }
 
 func init() {
-	cobra.OnInitialize(initConfig)
-
-	// Here you will define your flags and configuration settings.
-	// Cobra supports Persistent Flags, which, if defined here,
-	// will be global for your application.
-
-	RootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is $HOME/.scmt.yaml)")
-	RootCmd.PersistentFlags().StringArrayVarP(&sources, "sources", "s", nil, "full path of special directory or file")
-	RootCmd.PersistentFlags().StringVarP(&lang, "language", "l", "", "language, php,pytho,go etc.")
-	RootCmd.PersistentFlags().StringVar(&name, "name", "", "name of swagger project.")
-	RootCmd.PersistentFlags().StringVar(&version, "version", "", "version of swagger project.")
-	RootCmd.PersistentFlags().StringArrayVarP(&output, "output", "o", []string{"json"}, `Where to output, can be json/api/yml.
-	eg:
-	output to a json file: -o /home/koolay/swagger.json
-	output to a yml file: -o /home/koolay/swagger.yml
-	output to POST an api: -o http://myhost.com/swagger
-	`)
-
-	// Cobra also supports local flags, which will only run
-	// when this action is called directly.
-}
-
-// initConfig reads in config file and ENV variables if set.
-func initConfig() {
-	if cfgFile != "" { // enable ability to specify config file via flag
-		viper.SetConfigFile(cfgFile)
-	}
-
-	viper.SetConfigName(".scmt") // name of config file (without extension)
-	viper.AddConfigPath("$HOME") // adding home directory as first search path
-	viper.AutomaticEnv()         // read in environment variables that match
-
-	if err := verifyArgs(); err != nil {
-		fmt.Println(err.Error())
-		os.Exit(0)
-	}
-	viper.Set("sources", sources)
-	viper.Set("lang", lang)
-	viper.Set("output", output)
-	viper.Set("name", name)
-	viper.Set("version", version)
-
-	// If a config file is found, read it in.
-	if err := viper.ReadInConfig(); err == nil {
-		fmt.Println("Using config file:", viper.ConfigFileUsed())
-	}
-}
-
-func verifyArgs() error {
-
-	if sources == nil {
-		return errors.New("Miss args of sources")
-	}
-
-	if lang == "" {
-		return errors.New("Miss args of lang")
-	}
-	return nil
 }
