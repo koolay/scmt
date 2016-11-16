@@ -19,6 +19,7 @@ import (
 	"fmt"
 	"log"
 
+	"github.com/go-openapi/spec"
 	"github.com/koolay/scmt/parse"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
@@ -55,10 +56,35 @@ var createCmd = &cobra.Command{
 			parser, err := NewParser(lang)
 			if err == nil {
 				log.Println("start read " + ext + "...")
+
+				swagger := spec.Swagger{}
+				swaggerInfo := spec.Info{}
+				swaggerInfo.Title = viper.Get("name").(string)
+				swaggerInfo.Version = viper.Get("version").(string)
+				swagger.Info = &swaggerInfo
+				swaggerPaths := spec.Paths{}
+				swaggerPaths.Paths = map[string]spec.PathItem{}
 				for _, source := range sources {
-					log.Println("read " + source)
-					parser.Parse(source)
+					log.Println("read from: " + source)
+					swaggerPathItems := parser.Parse(source)
+					if swaggerPathItems != nil {
+						for k, v := range swaggerPathItems {
+							if _, ok := swaggerPaths.Paths[k]; ok {
+								panic(fmt.Sprintf("duplicate path: %s", k))
+							} else {
+								swaggerPaths.Paths[k] = v
+							}
+
+						}
+					}
 				}
+				swagger.Paths = &swaggerPaths
+				if swaggerJsonBytes, err := swagger.MarshalJSON(); err == nil {
+					fmt.Println(string(swaggerJsonBytes))
+				} else {
+					panic(err)
+				}
+
 			} else {
 				log.Fatal(err.Error())
 			}

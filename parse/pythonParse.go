@@ -5,7 +5,6 @@ import "github.com/go-openapi/spec"
 type PythonParser struct {
 }
 
-func (*PythonParser) ParseComment(comment string) spec.PathItem {
-	return spec.PathItem{}
-
+func (*PythonParser) Parse(source string) map[string]spec.PathItem {
+	return map[string]spec.PathItem{}
 }

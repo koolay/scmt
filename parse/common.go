@@ -23,7 +23,7 @@ var reApiParamFieldGroup = regexp.MustCompile(`\[?\s*(?P<paramName>[^=\s\[\]]+)(
 var reApiResponse = regexp.MustCompile(`(?ms)@apiResponse\s+(?P<responseCode>\d+)(\s*(?P<content>(\{.*?\*\s*\})|(\[.*?\*\s*\])))?`)
 
 type Parser interface {
-	Parse(source string) []spec.PathItem
+	Parse(source string) map[string]spec.PathItem
 }
 
 type Api struct {
