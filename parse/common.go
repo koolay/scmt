@@ -45,8 +45,9 @@ type Param struct {
 }
 
 type Response struct {
-	Code    int
-	Content string
+	Code        int
+	Content     string
+	Description string
 }
 
 func parseApi(sourceCode string) (Api, error) {
@@ -95,7 +96,6 @@ func parseApiParam(commentBlock string) []*Param {
 			param := new(Param)
 			typeString := match["type"]   // {integer{100-200}}  or {string{..5}}
 			fieldString := match["field"] // [name=abc] or id=123
-			param.Description = match["description"]
 			optional := false
 			var paramName string
 			var defaultValue interface{}
@@ -140,6 +140,12 @@ func parseApiParam(commentBlock string) []*Param {
 					param.MaxLength = &maxLength
 				}
 			}
+
+			if match["description"] != "" {
+				param.Description = match["description"]
+			} else {
+				param.Description = paramName
+			}
 			param.DefaultValue = defaultValue
 			param.Field = paramName
 			param.Optional = optional
@@ -172,6 +178,7 @@ func parseResponse(commentBlock string) []Response {
 			log.Fatal("invalid response code %s", response["responseCode"])
 		}
 		resp.Content = starRe.ReplaceAllString(response["content"], "")
+		resp.Description = " "
 		rtv = append(rtv, resp)
 	}
 	return rtv

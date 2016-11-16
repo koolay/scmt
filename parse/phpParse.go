@@ -58,6 +58,8 @@ func (parser *PhpParser) Parse(source string) map[string]spec.PathItem {
 					swaggerParam.Minimum = param.MinNum
 					swaggerParam.MaxLength = param.MaxLength
 					swaggerParam.MinLength = param.MinLength
+					// TODO
+					swaggerParam.In = "formData"
 					operate.AddParam(&swaggerParam)
 
 					/*
@@ -84,6 +86,7 @@ func (parser *PhpParser) Parse(source string) map[string]spec.PathItem {
 					} else {
 						swaggerResp.Schema = nil
 					}
+					swaggerResp.Description = resp.Description
 					swaggerResponses.StatusCodeResponses[resp.Code] = swaggerResp
 				}
 				operate.Responses = &swaggerResponses

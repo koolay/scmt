@@ -102,6 +102,9 @@ var createCmd = &cobra.Command{
 				}
 
 				swagger.Paths = &swaggerPaths
+				swagger.BasePath = "/"
+				swagger.Swagger = "2.0"
+				swagger.Definitions = spec.Definitions{}
 				outputer := OutPuter{}
 				outputer.OutputFlags = outputs
 				outputer.Swagger = &swagger
