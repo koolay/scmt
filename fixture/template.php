@@ -15,18 +15,66 @@ function help($param)
 
 /**
  * @apiVersion 1.0.0
- * @api {get} /user/auth/login user login
- * @apiName home page
- * @apiParam {integer{100-200}} id=123 id of user
- * @apiParam {string{..5}} [name=abc]
- * @apiParam {string{20..}} [title="good title"] title of article
+ * @api {get} /mall/product/:id get detail of product
+ * @apiName mall.product.get
+ * @apiParam {string{..32}} id id of product
  * @apiResponseRef /fixture/result.json
  * @apiResponse 200 {
  *  "result": true,
- *  "msg": "abc",
- *  "extra": ["aa", "bc"],
- *  "complex": [{"id": 123, "title": "this is good"}],
- *  "data": {"id": "12312312", "abc": "very good"}
+ *  "data": {"id": "a1", "name": "pen", "price": 101.2 }
+ * } //must new line
+ *
+ */
+function actionProductDetail($id, $name)
+{
+    return null;
+}
+
+/**
+ * @apiVersion 1.0.0
+ * @api {delete} /mall/product/:id delete product
+ * @apiName mall.product.delete
+ * @apiParam {string{..32}} id id of product
+ * @apiResponseRef /fixture/result.json
+ * @apiResponse 201
+ */
+function actionDeleteProduct($id, $name)
+{
+    return null;
+}
+
+
+/**
+ * @apiVersion 1.0.0
+ * @api {get} /mall/products get list products
+ * @apiName mall.product.list
+ * @apiParam {integer{1-}} [page=1] pageIndex
+ * @apiResponseRef /fixture/result.json
+ * @apiResponse 200 {
+ *  "result": true,
+ *  "data": [{"id": "a1", "name": "this is good", "price": 101.2, "amount": 100}]
+ * } //must new line
+ *
+ */
+function actionProductList()
+{
+    return null;
+}
+
+
+/**
+ * @apiVersion 1.0.0
+ * @api {post} /mall/products add new product, and return id
+ * @apiName mall.product.create
+ * @apiParam {integer{100-200}} amount=123 amount of products
+ * @apiParam {string{3..50}} name name of product
+ * @apiParam {number{1-}} [price=101.2] price of product
+ * @apiParam {string{..500}} [description] description of product
+ * @apiResponseRef /fixture/result.json
+ * @apiResponse 200 {
+ *  "result": true,
+ *  "msg": "success",
+ *  "data": {"id": "12312312"}
  * } //must new line
  *
  * @apiResponse 401 {
@@ -35,19 +83,22 @@ function help($param)
  * }//must new line
  *
  */
-function actionIndex($id, $name)
+function actionProduct()
 {
     return null;
 }
 
 
 
+
 /**
  * @apiVersion 1.0.0
- * @api {get} /user/:id  get user
- * @apiName get username
- * @apiParam { integer } id
- * @apiParam { string } [name]
+ * @api {put} /mall/product/:id  update product
+ * @apiName mall.product.update
+ * @apiParam {string{..32}} id id of product
+ * @apiParam {string{3..50}} [name] name of product
+ * @apiParam {number{1-}} [price] price of product
+ * @apiParam {integer{100-200}} [amount] amount of products
  * @apiResponseRef /fixture/result.json
  * @apiResponse 200 {
  *  "result": true,
@@ -58,41 +109,13 @@ function actionIndex($id, $name)
  * }//must new line
  *
  * @apiResponse 403 [{
- *  "result": true,
- *  "msg": "not a object",
- *  "items": [{"id": 123, "title": "this is good"}]
+ *  "result": false,
+ *  "msg": "invalid amount"
  * }
  * ]//must new line
  *
  */
-function actionUser()
+function actionUpdateProduct()
 {
     return null;
 }
-
-
-/**
- *
- * @apiVersion 1.0.1
- * @api {post} /content/:id update
- * @apiName update user
- * @apiParam id
- * @apiParam name
- * @apiParam { integer } age=18
- * @apiResponse 201
- *
- * @apiResponse 401 {
- *  "result": false,
- *  "msg": "NotAuthorization"
- * }//must new line
- */
-function actionNoContent($param)
-{
-    if ($param == null) {
-        return "aa";
-    } else {
-        return "111";
-    }
-    return null;
-}
-
