@@ -45,6 +45,8 @@ var (
 	// name of swagger
 	name    string
 	version string
+	// if output is api
+	httpHeaders []string
 )
 
 var langMap = map[string]string{"php": ".php"}
@@ -138,6 +140,10 @@ func init() {
 	output to a yml file: -o /home/koolay/swagger.yml
 	output to POST an api: -o http://myhost.com/swagger
 	`)
+	createCmd.PersistentFlags().StringArrayVarP(&httpHeaders, "headers", "H", nil, `http headers.
+	eg:
+	-H Authorization="Bearer mytoken"
+	`)
 
 	// Cobra also supports local flags, which will only run
 	// when this action is called directly.
@@ -162,6 +168,7 @@ func initConfig() {
 	viper.Set("output", outputs)
 	viper.Set("name", name)
 	viper.Set("version", version)
+	viper.Set("headers", httpHeaders)
 
 	// If a config file is found, read it in.
 	if err := viper.ReadInConfig(); err == nil {

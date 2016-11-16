@@ -17,7 +17,7 @@ function help($param)
  * @apiVersion 1.0.0
  * @api {get} /mall/product/:id get detail of product
  * @apiName mall.product.get
- * @apiParam {string{..32}} id id of product
+ * @apiParam query {string{..32}} id id of product
  * @apiResponseRef /fixture/result.json
  * @apiResponse 200 {
  *  "result": true,
@@ -34,7 +34,7 @@ function actionProductDetail($id, $name)
  * @apiVersion 1.0.0
  * @api {delete} /mall/product/:id delete product
  * @apiName mall.product.delete
- * @apiParam {string{..32}} id id of product
+ * @apiParam query {string{..32}} id id of product
  * @apiResponseRef /fixture/result.json
  * @apiResponse 201
  */
@@ -48,7 +48,7 @@ function actionDeleteProduct($id, $name)
  * @apiVersion 1.0.0
  * @api {get} /mall/products get list products
  * @apiName mall.product.list
- * @apiParam {integer{1-}} [page=1] pageIndex
+ * @apiParam query {integer{1-}} [page=1] pageIndex
  * @apiResponseRef /fixture/result.json
  * @apiResponse 200 {
  *  "result": true,
@@ -66,10 +66,10 @@ function actionProductList()
  * @apiVersion 1.0.0
  * @api {post} /mall/products add new product, and return id
  * @apiName mall.product.create
- * @apiParam {integer{100-200}} amount=123 amount of products
- * @apiParam {string{3..50}} name name of product
- * @apiParam {number{1-}} [price=101.2] price of product
- * @apiParam {string{..500}} [description] description of product
+ * @apiParam body {integer{100-200}} amount=123 amount of products
+ * @apiParam body {string{3..50}} name name of product
+ * @apiParam body {number{1-}} [price=101.2] price of product
+ * @apiParam body {string{..500}} [description] description of product
  * @apiResponseRef /fixture/result.json
  * @apiResponse 200 {
  *  "result": true,
@@ -95,10 +95,10 @@ function actionProduct()
  * @apiVersion 1.0.0
  * @api {put} /mall/product/:id  update product
  * @apiName mall.product.update
- * @apiParam {string{..32}} id id of product
- * @apiParam {string{3..50}} [name] name of product
- * @apiParam {number{1-}} [price] price of product
- * @apiParam {integer{100-200}} [amount] amount of products
+ * @apiParam query {string{..32}} id id of product
+ * @apiParam body {string{3..50}} [name] name of product
+ * @apiParam body {number{1-}} [price] price of product
+ * @apiParam body {integer{100-200}} [amount] amount of products
  * @apiResponseRef /fixture/result.json
  * @apiResponse 200 {
  *  "result": true,

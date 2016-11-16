@@ -49,6 +49,7 @@ func (parser *PhpParser) Parse(source string) map[string]spec.PathItem {
 
 				for _, param := range params {
 					swaggerParam := spec.Parameter{}
+					swaggerParam.In = param.In
 					swaggerParam.Type = param.Type
 					swaggerParam.Default = param.DefaultValue
 					swaggerParam.Required = !param.Optional
@@ -58,8 +59,6 @@ func (parser *PhpParser) Parse(source string) map[string]spec.PathItem {
 					swaggerParam.Minimum = param.MinNum
 					swaggerParam.MaxLength = param.MaxLength
 					swaggerParam.MinLength = param.MinLength
-					// TODO
-					swaggerParam.In = "formData"
 					operate.AddParam(&swaggerParam)
 
 					/*
@@ -90,28 +89,38 @@ func (parser *PhpParser) Parse(source string) map[string]spec.PathItem {
 					swaggerResponses.StatusCodeResponses[resp.Code] = swaggerResp
 				}
 				operate.Responses = &swaggerResponses
-				swaggerPathItem := spec.PathItem{}
-				switch method {
-				case "GET":
-					swaggerPathItem.Get = &operate
-				case "POST":
-					swaggerPathItem.Post = &operate
-				case "PUT":
-					swaggerPathItem.Put = &operate
-				case "DELETE":
-					swaggerPathItem.Delete = &operate
-				case "PATCH":
-					swaggerPathItem.Patch = &operate
-				case "OPTIONS":
-					swaggerPathItem.Options = &operate
-				case "HEAD":
-					swaggerPathItem.Head = &operate
-				default:
-					panic(fmt.Sprintf("not support method: %s", method))
+				swaggerPathItem, ok := swaggerPathItems[api.Path]
+				setOperate := func(pathItem spec.PathItem) spec.PathItem {
+					switch method {
+					case "GET":
+						pathItem.Get = &operate
+					case "POST":
+						pathItem.Post = &operate
+					case "PUT":
+						pathItem.Put = &operate
+					case "DELETE":
+						pathItem.Delete = &operate
+					case "PATCH":
+						pathItem.Patch = &operate
+					case "OPTIONS":
+						pathItem.Options = &operate
+					case "HEAD":
+						pathItem.Head = &operate
+					default:
+						panic(fmt.Sprintf("not support method: %s", method))
+					}
+					return pathItem
+				}
+				if !ok {
+					swaggerPathItem := spec.PathItem{}
+					item := setOperate(swaggerPathItem)
+					swaggerPathItems[api.Path] = item
+				} else {
+					item := setOperate(swaggerPathItem)
+					swaggerPathItems[api.Path] = item
 				}
 
 				// apiVersion := parseApiVersion(comment)
-				swaggerPathItems[api.Path] = swaggerPathItem
 			}
 		}
 	}

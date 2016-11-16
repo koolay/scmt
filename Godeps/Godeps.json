@@ -13,9 +13,22 @@
 			"Rev": "5bd2802263f21d8788851d5305584c82a5c75d7e"
 		},
 		{
+			"ImportPath": "github.com/asaskevich/govalidator",
+			"Comment": "v5",
+			"Rev": "7b3beb6df3c42abd3509abfc3bcacc0fbfb7c877"
+		},
+		{
 			"ImportPath": "github.com/fsnotify/fsnotify",
 			"Comment": "v1.3.1-1-gf12c623",
 			"Rev": "f12c6236fe7b5cf6bcf30e5935d08cb079d78334"
+		},
+		{
+			"ImportPath": "github.com/go-openapi/analysis",
+			"Rev": "7222828b8ce19afee3c595aef6643b9e42150120"
+		},
+		{
+			"ImportPath": "github.com/go-openapi/errors",
+			"Rev": "49fe8b3a0e0d32a617d8d50c67f856ad6e45b28b"
 		},
 		{
 			"ImportPath": "github.com/go-openapi/jsonpointer",
@@ -26,12 +39,28 @@
 			"Rev": "36d33bfe519efae5632669801b180bf1a245da3b"
 		},
 		{
+			"ImportPath": "github.com/go-openapi/loads",
+			"Rev": "5861a4879a2866943dce3c644c879af9e59c22a3"
+		},
+		{
+			"ImportPath": "github.com/go-openapi/runtime",
+			"Rev": "12c07accf0687ab20b1e7b6293d8012ce282499c"
+		},
+		{
 			"ImportPath": "github.com/go-openapi/spec",
 			"Rev": "d1c18b339aece4b16ead6d253b85b6ad7180ea54"
 		},
 		{
+			"ImportPath": "github.com/go-openapi/strfmt",
+			"Rev": "34fc3ba7c0f5fb615fda47a2b4fbd4c641b215f2"
+		},
+		{
 			"ImportPath": "github.com/go-openapi/swag",
 			"Rev": "3b6d86cd965820f968760d5d419cb4add096bdd7"
+		},
+		{
+			"ImportPath": "github.com/go-openapi/validate",
+			"Rev": "027696d4b54399770f1cdcc6c6daa56975f9e14e"
 		},
 		{
 			"ImportPath": "github.com/hashicorp/hcl",
@@ -95,6 +124,15 @@
 			"Rev": "d2dd0262208475919e1a362f675cfc0e7c10e905"
 		},
 		{
+			"ImportPath": "github.com/moul/http2curl",
+			"Rev": "b1479103caacaa39319f75e7f57fc545287fca0d"
+		},
+		{
+			"ImportPath": "github.com/parnurzeal/gorequest",
+			"Comment": "v0.2.14-22-g72b36f5",
+			"Rev": "72b36f5004492e232ddc3b67c17060b252231000"
+		},
+		{
 			"ImportPath": "github.com/pelletier/go-buffruneio",
 			"Rev": "df1e16fde7fc330a0ca68167c23bf7ed6ac31d6d"
 		},
@@ -132,7 +170,15 @@
 			"Rev": "651d9d916abc3c3d6a91a12549495caba5edffd2"
 		},
 		{
+			"ImportPath": "golang.org/x/net/context",
+			"Rev": "2e9cee70ee697e0a2ef894b560dda50dec7dff58"
+		},
+		{
 			"ImportPath": "golang.org/x/net/idna",
+			"Rev": "2e9cee70ee697e0a2ef894b560dda50dec7dff58"
+		},
+		{
+			"ImportPath": "golang.org/x/net/publicsuffix",
 			"Rev": "2e9cee70ee697e0a2ef894b560dda50dec7dff58"
 		},
 		{

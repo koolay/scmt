@@ -6,6 +6,8 @@ import (
 	"strings"
 
 	"github.com/go-openapi/spec"
+	"github.com/parnurzeal/gorequest"
+	"github.com/spf13/viper"
 )
 
 type OutPuter struct {
@@ -28,11 +30,11 @@ func (out *OutPuter) Output() {
 
 		switch dest {
 		case OUTPUT_API:
-			out.toApi()
+			out.toApi(flag)
 		case OUTPUT_YML:
-			out.toYml()
+			out.toYml(flag)
 		case OUTPUT_JSON:
-			out.toJson()
+			out.toJson(flag)
 		case OUTPUT_STDOUT:
 			out.toStdout()
 		default:
@@ -51,17 +53,37 @@ func serialize(out *OutPuter) {
 	out.swaggerJsonBytes = bytes
 }
 
-func (out *OutPuter) toYml() {
+func (out *OutPuter) toYml(dest string) {
 
 	fmt.Println("-------------output to yml-------------")
 }
 
-func (out *OutPuter) toJson() {
+func (out *OutPuter) toJson(dest string) {
 	fmt.Println("-------------output to json-------------")
 }
 
-func (out *OutPuter) toApi() {
+func (out *OutPuter) toApi(dest string) {
 	fmt.Println("-------------output to api-------------")
+	headers := viper.Get("headers").([]string)
+	request := gorequest.New()
+	for _, v := range headers {
+		val := strings.Replace(v, `"`, "", -1)
+		pies := strings.Split(val, "=")
+		if len(pies) == 2 {
+			headerKey := strings.TrimSpace(pies[0])
+			headerVal := strings.TrimSpace(pies[1])
+			request.Set(headerKey, headerVal)
+			fmt.Printf("-H %s: %s \n", headerKey, headerVal)
+		} else {
+			panic("invalid args of -H")
+		}
+	}
+	resp, body, errs := request.Put(dest).Send(`{"swagger": "` + string(out.swaggerJsonBytes) + `"}`).End()
+	if errs != nil {
+		panic(errs[0])
+	}
+	fmt.Println("http status:", resp.StatusCode)
+	fmt.Println(body)
 }
 
 func (out *OutPuter) toStdout() {
@@ -71,7 +93,7 @@ func (out *OutPuter) toStdout() {
 
 func parseOutputFlag(cmdFlag string) string {
 
-	reApiFlag := regexp.MustCompile(`^https?\/\/[^\s]+`)
+	reApiFlag := regexp.MustCompile(`^https?:\/\/[^\s]+`)
 	if reApiFlag.Match([]byte(cmdFlag)) {
 		return OUTPUT_API
 	} else if strings.HasSuffix(cmdFlag, ".json") {

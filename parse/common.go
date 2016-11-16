@@ -17,7 +17,7 @@ var reApi = regexp.MustCompile(`@api\s\{(?P<method>\w+)\}\s+(?P<path>(/[^\s]+)+)
 var reApiName = regexp.MustCompile(`@apiName\s+(?P<name>[^\r\n]+)`)
 var reApiVersion = regexp.MustCompile(`@apiVersion\s+(?P<name>[^\r\n]+)`)
 var reApiParam = regexp.MustCompile(`@apiParam\s+(?P<name>[^\r\n]+)`)
-var reApiParamGroup = regexp.MustCompile(`(?P<type>\{.+\})\s+(?P<field>(\[[^\s=\[]+\=?[^\=\]]+\])|([^\s=\[]+\=?[^\s\=\]]+))(\s+(?P<descriptionoptional>[^\r\n]*))?`)
+var reApiParamGroup = regexp.MustCompile(`(?P<in>[a-z]+)\s+(?P<type>\{.+\})\s+(?P<field>(\[[^\s=\[]+\=?[^\=\]]+\])|([^\s=\[]+\=?[^\s\=\]]+))(\s+(?P<descriptionoptional>[^\r\n]*))?`)
 var reApiParamTypeGroup = regexp.MustCompile(`\{\s*(?P<type>[a-z]+)(\{\s*(((?P<min>\d+)?\-(?P<max>\d+)?)|((?P<short>\d+)?\.\.(?P<length>\d+)?))\s*\})?\s*\}`)
 var reApiParamFieldGroup = regexp.MustCompile(`\[?\s*(?P<paramName>[^=\s\[\]]+)(=\s*"?(?P<default>[^="\[\]]+)"?)?`)
 var reApiResponse = regexp.MustCompile(`(?ms)@apiResponse\s+(?P<responseCode>\d+)(\s*(?P<content>(\{.*?\*\s*\})|(\[.*?\*\s*\])))?`)
@@ -33,6 +33,7 @@ type Api struct {
 }
 
 type Param struct {
+	In           string
 	Type         string
 	Optional     bool
 	Field        string
@@ -90,10 +91,10 @@ func parseApiParam(commentBlock string) []*Param {
 
 	for _, v := range params {
 
-		fmt.Printf("param: %s \n", v)
 		match := matchGroup(reApiParamGroup, v)
 		if len(match) > 0 {
 			param := new(Param)
+			in := match["in"]
 			typeString := match["type"]   // {integer{100-200}}  or {string{..5}}
 			fieldString := match["field"] // [name=abc] or id=123
 			optional := false
@@ -146,6 +147,7 @@ func parseApiParam(commentBlock string) []*Param {
 			} else {
 				param.Description = paramName
 			}
+			param.In = in
 			param.DefaultValue = defaultValue
 			param.Field = paramName
 			param.Optional = optional
