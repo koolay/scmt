@@ -10,9 +10,10 @@ import (
 	"strings"
 
 	"github.com/go-openapi/spec"
+	"github.com/spf13/viper"
 )
 
-var reCommentBlock = regexp.MustCompile(`/\*(.|[\r\n])*?\*/`)
+// var reCommentBlock = regexp.MustCompile(`/\*(.|[\r\n])*?\*/`)
 var reApi = regexp.MustCompile(`@api\s\{(?P<method>\w+)\}\s+(?P<path>(/[^\s]+)+)(\s(?P<title>[^\*\r\n]+))?`)
 var reApiModule = regexp.MustCompile(`@apiGroup\s+(?P<module>[^\r\n\s]+)`)
 var reApiName = regexp.MustCompile(`@apiName\s+(?P<name>[^\r\n]+)`)
@@ -23,8 +24,32 @@ var reApiParamTypeGroup = regexp.MustCompile(`\{\s*(?P<type>[a-z]+)(\{\s*(((?P<m
 var reApiParamFieldGroup = regexp.MustCompile(`\[?\s*(?P<paramName>[^=\s\[\]]+)(=\s*"?(?P<default>[^="\[\]]+)"?)?`)
 var reApiResponse = regexp.MustCompile(`(?ms)@apiResponse\s+(?P<responseCode>\d+)(\s*(?P<content>(\{.*?\*\s*\})|(\[.*?\*\s*\])))?`)
 
-type Parser interface {
-	Parse(source string) map[string]spec.PathItem
+type Parser struct {
+	lang                string
+	sourceCode          string
+	commentRegexPattern string
+
+	Swagger *spec.Swagger
+}
+
+var commentRegexPatternMap = map[string]string{"php": `/\*(.|[\r\n])*?\*/`, "python": `\"\"\"(.|[\r\n])*?\"\"\"`}
+
+func NewParser(lang string) (parser *Parser) {
+	parser = &Parser{lang: lang, commentRegexPattern: commentRegexPatternMap[lang]}
+
+	// init swagger
+	parser.Swagger = &spec.Swagger{}
+	swaggerInfo := spec.Info{}
+	swaggerInfo.Title = viper.Get("name").(string)
+	swaggerInfo.Version = viper.Get("version").(string)
+	parser.Swagger.Info = &swaggerInfo
+	parser.Swagger.BasePath = "/"
+	parser.Swagger.Swagger = "2.0"
+	parser.Swagger.Definitions = spec.Definitions{}
+	parser.Swagger.Paths = &spec.Paths{}
+	parser.Swagger.Paths.Paths = map[string]spec.PathItem{}
+
+	return parser
 }
 
 type Api struct {
@@ -53,7 +78,7 @@ type Response struct {
 }
 
 // return module or tag
-func parseApiTag(commentBlock string) string {
+func (parser *Parser) parseApiTag(commentBlock string) string {
 
 	match := reApiModule.FindStringSubmatch(commentBlock)
 	if len(match) > 1 {
@@ -63,7 +88,7 @@ func parseApiTag(commentBlock string) string {
 	}
 }
 
-func parseApi(sourceCode string) (Api, error) {
+func (parser *Parser) parseApi(sourceCode string) (Api, error) {
 	result := matchGroup(reApi, sourceCode)
 	if len(result) == 0 {
 		return Api{}, &ParseError{}
@@ -71,7 +96,7 @@ func parseApi(sourceCode string) (Api, error) {
 	return Api{Path: result["path"], Title: result["title"], Method: result["method"]}, nil
 }
 
-func parseApiVersion(sourceCode string) string {
+func (parser *Parser) parseApiVersion(sourceCode string) string {
 	match := reApiVersion.FindStringSubmatch(sourceCode)
 	if len(match) > 1 {
 		return match[1]
@@ -80,7 +105,7 @@ func parseApiVersion(sourceCode string) string {
 	}
 }
 
-func parseApiName(sourceCode string) string {
+func (parser *Parser) parseApiName(sourceCode string) string {
 	match := reApiName.FindStringSubmatch(sourceCode)
 	if len(match) > 1 {
 		return match[1]
@@ -89,7 +114,7 @@ func parseApiName(sourceCode string) string {
 	}
 }
 
-func parseApiParam(commentBlock string) []*Param {
+func (parser *Parser) parseApiParam(commentBlock string) []*Param {
 
 	rtv := []*Param{}
 	// get whole param string
@@ -172,7 +197,7 @@ func parseApiParam(commentBlock string) []*Param {
 
 }
 
-func parseResponse(commentBlock string) []Response {
+func (parser *Parser) parseResponse(commentBlock string) []Response {
 
 	result := reApiResponse.FindAllStringSubmatch(commentBlock, -1)
 	rtv := []Response{}
@@ -234,7 +259,7 @@ func recursiveFindFiles(root string, pattern string) ([]string, error) {
 }
 
 // find files from folder
-func findFiles(source string, ext string) ([]string, error) {
+func FindFiles(source string, ext string) ([]string, error) {
 
 	files := []string{}
 	if ext == "" {
@@ -259,6 +284,7 @@ func findFiles(source string, ext string) ([]string, error) {
 
 }
 
-func parseComments(sourceCode string) []string {
+func (parser *Parser) parseComments(sourceCode string) []string {
+	var reCommentBlock = regexp.MustCompile(parser.commentRegexPattern)
 	return reCommentBlock.FindAllString(sourceCode, -1)
 }

@@ -17,10 +17,10 @@ package cmd
 import (
 	"errors"
 	"fmt"
+	"io/ioutil"
 	"log"
 	"os"
 
-	"github.com/go-openapi/spec"
 	"github.com/koolay/scmt/parse"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
@@ -49,16 +49,7 @@ var (
 	httpHeaders []string
 )
 
-var langMap = map[string]string{"php": ".php"}
-
-func NewParser(lang string) (parse.Parser, error) {
-	switch lang {
-	case "php":
-		return new(parse.PhpParser), nil
-	default:
-		return nil, errors.New("do not support language:" + lang)
-	}
-}
+var langMap = map[string]string{"php": ".php", "python": ".py"}
 
 // createCmd represents the create command
 var createCmd = &cobra.Command{
@@ -76,48 +67,34 @@ var createCmd = &cobra.Command{
 		if ext == "" {
 			log.Fatal("do not support the language: " + lang)
 			return
-		} else {
-			parser, err := NewParser(lang)
-			if err == nil {
-				log.Println("start read " + ext + "...")
+		}
+		swaggerParser := parse.NewParser(lang)
+		for _, source := range sources {
+			log.Println("read from: " + source)
+			files, err := parse.FindFiles(source, ext)
+			if err != nil {
+				fmt.Printf("read files failed. source: %s", source)
+				panic(err)
+			}
 
-				swagger := spec.Swagger{}
-				swaggerInfo := spec.Info{}
-				swaggerInfo.Title = viper.Get("name").(string)
-				swaggerInfo.Version = viper.Get("version").(string)
-				swagger.Info = &swaggerInfo
-				swaggerPaths := spec.Paths{}
-				swaggerPaths.Paths = map[string]spec.PathItem{}
-				for _, source := range sources {
-					log.Println("read from: " + source)
-					swaggerPathItems := parser.Parse(source)
-					if swaggerPathItems != nil {
-						for k, v := range swaggerPathItems {
-							if _, ok := swaggerPaths.Paths[k]; ok {
-								panic(fmt.Sprintf("duplicate path: %s", k))
-							} else {
-								swaggerPaths.Paths[k] = v
-							}
+			for _, f := range files {
 
-						}
-					}
-				}
-
-				swagger.Paths = &swaggerPaths
-				swagger.BasePath = "/"
-				swagger.Swagger = "2.0"
-				swagger.Definitions = spec.Definitions{}
-				outputer := OutPuter{}
-				outputer.OutputFlags = outputs
-				outputer.Swagger = &swagger
-				err := outputer.Output()
+				fmt.Printf("read file: %s \n", f)
+				content, err := ioutil.ReadFile(f)
 				if err != nil {
 					panic(err)
 				}
-
-			} else {
-				log.Fatal(err.Error())
+				sourceCode := string(content[:])
+				swaggerParser.Parse(sourceCode)
 			}
+		}
+
+		outputer := OutPuter{}
+		outputer.OutputFlags = outputs
+		outputer.Swagger = swaggerParser.Swagger
+		err := outputer.Output()
+		if err != nil {
+			panic(err)
 		}
 
 	},
