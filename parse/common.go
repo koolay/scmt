@@ -14,6 +14,7 @@ import (
 
 var reCommentBlock = regexp.MustCompile(`/\*(.|[\r\n])*?\*/`)
 var reApi = regexp.MustCompile(`@api\s\{(?P<method>\w+)\}\s+(?P<path>(/[^\s]+)+)(\s(?P<title>[^\*\r\n]+))?`)
+var reApiModule = regexp.MustCompile(`@apiGroup\s+(?P<module>[^\r\n\s]+)`)
 var reApiName = regexp.MustCompile(`@apiName\s+(?P<name>[^\r\n]+)`)
 var reApiVersion = regexp.MustCompile(`@apiVersion\s+(?P<name>[^\r\n]+)`)
 var reApiParam = regexp.MustCompile(`@apiParam\s+(?P<name>[^\r\n]+)`)
@@ -49,6 +50,17 @@ type Response struct {
 	Code        int
 	Content     string
 	Description string
+}
+
+// return module or tag
+func parseApiTag(commentBlock string) string {
+
+	match := reApiModule.FindStringSubmatch(commentBlock)
+	if len(match) > 1 {
+		return match[1]
+	} else {
+		return ""
+	}
 }
 
 func parseApi(sourceCode string) (Api, error) {

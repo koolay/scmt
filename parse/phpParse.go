@@ -44,6 +44,7 @@ func (parser *PhpParser) Parse(source string) map[string]spec.PathItem {
 				apiTitle := strings.TrimSpace(api.Title)
 				operate := spec.Operation{}
 				operate.Description = apiTitle
+				apiTag := parseApiTag(comment)
 				apiName := parseApiName(comment)
 				fmt.Println("---------process API: ", apiName, "---------")
 				params := parseApiParam(comment)
@@ -91,6 +92,7 @@ func (parser *PhpParser) Parse(source string) map[string]spec.PathItem {
 					swaggerResponses.StatusCodeResponses[resp.Code] = swaggerResp
 				}
 				operate.Responses = &swaggerResponses
+				operate.Tags = []string{apiTag}
 				swaggerPathItem, ok := swaggerPathItems[api.Path]
 				setOperate := func(pathItem spec.PathItem) spec.PathItem {
 					switch method {
