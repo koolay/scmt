@@ -41,7 +41,9 @@ func (parser *PhpParser) Parse(source string) map[string]spec.PathItem {
 				}
 
 				method := strings.ToUpper(api.Method)
+				apiTitle := strings.TrimSpace(api.Title)
 				operate := spec.Operation{}
+				operate.Description = apiTitle
 				apiName := parseApiName(comment)
 				fmt.Println("---------process API: ", apiName, "---------")
 				params := parseApiParam(comment)

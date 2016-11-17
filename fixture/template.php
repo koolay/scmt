@@ -66,10 +66,10 @@ function actionProductList()
  * @apiVersion 1.0.0
  * @api {post} /mall/products add new product, and return id
  * @apiName mall.product.create
- * @apiParam body {integer{100-200}} amount=123 amount of products
- * @apiParam body {string{3..50}} name name of product
- * @apiParam body {number{1-}} [price=101.2] price of product
- * @apiParam body {string{..500}} [description] description of product
+ * @apiParam formData {integer{100-200}} amount=123 amount of products
+ * @apiParam formData {string{3..50}} name name of product
+ * @apiParam formData {number{1-}} [price=101.2] price of product
+ * @apiParam formData {string{..500}} [description] description of product
  * @apiResponseRef /fixture/result.json
  * @apiResponse 200 {
  *  "result": true,
@@ -96,9 +96,9 @@ function actionProduct()
  * @api {put} /mall/product/:id  update product
  * @apiName mall.product.update
  * @apiParam query {string{..32}} id id of product
- * @apiParam body {string{3..50}} [name] name of product
- * @apiParam body {number{1-}} [price] price of product
- * @apiParam body {integer{100-200}} [amount] amount of products
+ * @apiParam formData {string{3..50}} [name] name of product
+ * @apiParam formData {number{1-}} [price] price of product
+ * @apiParam formData {integer{100-200}} [amount] amount of products
  * @apiResponseRef /fixture/result.json
  * @apiResponse 200 {
  *  "result": true,

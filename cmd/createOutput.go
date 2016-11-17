@@ -2,9 +2,12 @@ package cmd
 
 import (
 	"fmt"
+	"os"
+	"path/filepath"
 	"regexp"
 	"strings"
 
+	"github.com/go-openapi/errors"
 	"github.com/go-openapi/spec"
 	"github.com/parnurzeal/gorequest"
 	"github.com/spf13/viper"
@@ -16,7 +19,7 @@ type OutPuter struct {
 	swaggerJsonBytes []byte
 }
 
-func (out *OutPuter) Output() {
+func (out *OutPuter) Output() error {
 
 	if len(out.OutputFlags) < 1 {
 		out.OutputFlags = []string{OUTPUT_STDOUT}
@@ -24,23 +27,25 @@ func (out *OutPuter) Output() {
 
 	out.OutputFlags = removeDuplicatesUnordered(out.OutputFlags)
 	serialize(out)
-
+	var err error
 	for _, flag := range out.OutputFlags {
 		dest := parseOutputFlag(flag)
 
 		switch dest {
 		case OUTPUT_API:
-			out.toApi(flag)
+			err = out.toApi(flag)
 		case OUTPUT_YML:
-			out.toYml(flag)
+			err = out.toYml(flag)
 		case OUTPUT_JSON:
-			out.toJson(flag)
+			err = out.toJson(flag)
 		case OUTPUT_STDOUT:
-			out.toStdout()
+			err = out.toStdout()
 		default:
-			out.toStdout()
+			err = out.toStdout()
 		}
 	}
+
+	return err
 
 }
 
@@ -53,19 +58,49 @@ func serialize(out *OutPuter) {
 	out.swaggerJsonBytes = bytes
 }
 
-func (out *OutPuter) toYml(dest string) {
+func (out *OutPuter) toYml(dest string) error {
 
 	fmt.Println("-------------output to yml-------------")
+	return nil
 }
 
-func (out *OutPuter) toJson(dest string) {
+func (out *OutPuter) toJson(dest string) error {
 	fmt.Println("-------------output to json-------------")
+	fullname := dest
+	dir, filename := filepath.Split(fullname)
+	if dir == "" {
+		tmpDir, err := filepath.Abs(filepath.Dir(os.Args[0]))
+		if err != nil {
+			return err
+		}
+		dir = tmpDir
+		fullname = fmt.Sprintf("%s/%s", dir, filename)
+	}
+
+	if _, err := os.Stat(dir); os.IsNotExist(err) {
+		return errors.New(1, fmt.Sprintf("%s not exists", dir))
+	}
+
+	if file, err := os.Create(fullname); err == nil {
+		defer file.Close()
+		file.Write(out.swaggerJsonBytes)
+		fmt.Println("file saved: ", fullname)
+	} else {
+		return err
+	}
+
+	return nil
+
 }
 
-func (out *OutPuter) toApi(dest string) {
+func (out *OutPuter) toApi(dest string) error {
 	fmt.Println("-------------output to api-------------")
+	payload := map[string]interface{}{
+		"swagger": string(out.swaggerJsonBytes),
+	}
 	headers := viper.Get("headers").([]string)
 	request := gorequest.New()
+	request.Put(dest).SendMap(payload)
 	for _, v := range headers {
 		val := strings.Replace(v, `"`, "", -1)
 		pies := strings.Split(val, "=")
@@ -73,22 +108,23 @@ func (out *OutPuter) toApi(dest string) {
 			headerKey := strings.TrimSpace(pies[0])
 			headerVal := strings.TrimSpace(pies[1])
 			request.Set(headerKey, headerVal)
-			fmt.Printf("-H %s: %s \n", headerKey, headerVal)
 		} else {
-			panic("invalid args of -H")
+			return errors.New(1, "invalid args of -H")
 		}
 	}
-	resp, body, errs := request.Put(dest).Send(`{"swagger": "` + string(out.swaggerJsonBytes) + `"}`).End()
+	resp, body, errs := request.End()
 	if errs != nil {
-		panic(errs[0])
+		return errs[0]
 	}
 	fmt.Println("http status:", resp.StatusCode)
 	fmt.Println(body)
+	return nil
 }
 
-func (out *OutPuter) toStdout() {
+func (out *OutPuter) toStdout() error {
 	fmt.Println("-------------output to stdout-------------")
 	fmt.Println(string(out.swaggerJsonBytes))
+	return nil
 }
 
 func parseOutputFlag(cmdFlag string) string {

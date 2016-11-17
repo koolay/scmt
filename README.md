@@ -5,10 +5,9 @@ Generate swagger json from code
 
 ## Usage
 
-`scmt create -s ~/.go/src/github.com/koolay/scmt -l php -o http://myapp.com/swagger -H token=xxxx -o stdout`
+`scmt create -s /home/koolay/.go/src/github.com/koolay/scmt -l php --name myswagger --version 1.0.0 -o myswagger.json -o myswagger.yml -o stdout -o http://localhost:1337/api/open/swagger -H x-ticket="xxx"`
 
 ## TODO
 
-- param in
-
-
+- to yml file
+- content-type

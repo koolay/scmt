@@ -110,7 +110,10 @@ var createCmd = &cobra.Command{
 				outputer := OutPuter{}
 				outputer.OutputFlags = outputs
 				outputer.Swagger = &swagger
-				outputer.Output()
+				err := outputer.Output()
+				if err != nil {
+					panic(err)
+				}
 
 			} else {
 				log.Fatal(err.Error())
