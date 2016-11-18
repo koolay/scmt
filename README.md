@@ -88,7 +88,12 @@ Flags:
 
 ### 注释说明
 
-**api属性**
+- [@api](#api)
+- [@apiGroup](#apiGroup)
+- [@apiParam](#apiParam)
+- [@apiResponse](#apiResponse)
+
+**api属性 <a name="api">**
 
 > @api {method} path [title]  
 
@@ -98,7 +103,7 @@ Flags:
 | path  | Request Path. |
 |  title  | optional	A short title. (used for navigation and article header)  |
 
-**@apiGroup**
+**@apiGroup <a name="apiGroup">**
 
 api分组或所属模块
 
@@ -108,7 +113,7 @@ api分组或所属模块
 |:-----------|:------------|
 | name | 模块名称　|
 
-**@apiDescription**
+**@apiDescription <a name="apiDescription">**
 
 api描述
 
@@ -119,7 +124,7 @@ api描述
 | text | api描述　|
 
 
-**@apiParam**
+**@apiParam <a name="apiParam">**
 
 api参数
 
@@ -138,7 +143,7 @@ api参数
 
 
 
-**@apiResponse**
+**@apiResponse <a name="apiResponse">**
 
 api响应输出
 
@@ -155,7 +160,7 @@ api响应输出
 ### 验证swagger json文件格式正确性(还没完成)
 
 
-## TODO
+## TODO 
 
 - 验证swagger json文件的正确性
 - 生成 yaml file
