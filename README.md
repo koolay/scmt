@@ -85,6 +85,73 @@ Flags:
 
   js与php类似
 
+
+### 注释说明
+
+**api属性**
+
+> @api {method} path [title]  
+
+|  Name          |  Description  |
+|:-----------|:------------|
+|  method  |  Request method name: DELETE, GET, POST, PUT, ...  |
+| path  | Request Path. |
+|  title  | optional	A short title. (used for navigation and article header)  |
+
+**@apiGroup**
+
+api分组或所属模块
+
+> @apiGroup product
+
+| Name          | Description |
+|:-----------|:------------|
+| name | 模块名称　|
+
+**@apiDescription**
+
+api描述
+
+> @apiDescription text
+
+| Name          | Description |
+|:-----------|:------------|
+| text | api描述　|
+
+
+**@apiParam**
+
+api参数
+
+> @apiParam [(group)] [{type}] [field=defaultValue] [description]
+
+| Name         | Description |
+|:-----------|:------------|
+| {type} `optional` | 参数类型.　如: {Boolean}, {Number}, {String} |
+| {string{..5}} |  不超过５个字符的字符串. |
+| {string{2..5}} | 2到５个字符长度  |
+| {number{100-999}} | 数字100到999.  |
+| field	 | 字段名　|
+| [field] | 可选填字段. |
+| =defaultValue `optinal` | 参数默认值  |
+| descriptionoptional     | 参数描述 |
+
+
+
+**@apiResponse**
+
+api响应输出
+
+> @apiResponse statusCode  {   data
+> }
+
+| Name         | Description |
+|:-----------|:------------|
+| statusCode | http状态码　如: 200, 201 ... |
+| {data} |  响应数据, 用相应的类型值代码类型. |
+
+> **Note:** 最后的大括号需要单独一行
+
 ### 验证swagger json文件格式正确性(还没完成)
 
 
