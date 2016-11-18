@@ -56,22 +56,34 @@ Flags:
 
 - 输出保存到到json文件
 
-`scmt create -s /home/koolay/.go/src/github.com/koolay/scmt -l php --name myswagger --version 1.0.0 -o myswagger.json
+`scmt create -s /home/koolay/myApp -l php --name myswagger --version 1.0.0 -o myswagger.json
 
 > json文件位置可以是当前目录，或者绝对路径．如a.json则保存到当前scmt可执行文件当前目录
 
 - 在终端输出json
 
-`scmt create -s /home/koolay/.go/src/github.com/koolay/scmt -l php --name myswagger -o stdout
+`scmt create -s /home/koolay/myApp -l php --name myswagger -o stdout
 
 - 输出结果调用api (http PUT)
 
-`scmt create -s /home/koolay/.go/src/github.com/koolay/scmt -l php --name myswagger -o http://localhost:1337/api/open/swagger -H x-ticket="xxx"`
+`scmt create -s /home/koolay/myApp/product.php -l php --name myswagger -o http://localhost:1337/api/open/swagger -H x-ticket="xxx"`
+
+或者指定文件夹
+
+`scmt create -s /home/koolay/myApp -l php --name myswagger -o http://localhost:1337/api/open/swagger -H x-ticket="xxx"`
 
 - 输出到终端和保存到json
 
-`scmt create -s /home/koolay/.go/src/github.com/koolay/scmt -l php --name myswagger -o stdout -o a.json
+`scmt create -s /home/koolay/myApp -l php --name myswagger -o stdout -o a.json
 
+
+### 代码注释格式
+
+- php语言请[参考](https://git.mysoft.com.cn/mic/swagger-cli/blob/master/fixture/template.php)
+
+- python语言请[参考](https://git.mysoft.com.cn/mic/swagger-cli/blob/master/fixture/template.py)
+
+js与php类型
 
 ### 验证swagger json文件格式正确性(还没完成)
 
