@@ -52,7 +52,7 @@ Flags:
 
 ```
 
-#### 1. 从指定位置的代码文件生成swagger json 文件(支持的语言有php,js,python等)  
+### 从指定位置的代码文件生成swagger json 文件(支持的语言有php,js,python等)  
 
 - 输出保存到到json文件
 
@@ -73,7 +73,7 @@ Flags:
 `scmt create -s /home/koolay/.go/src/github.com/koolay/scmt -l php --name myswagger -o stdout -o a.json
 
 
-#### 2. 验证swagger json文件格式正确性(还没完成)
+### 验证swagger json文件格式正确性(还没完成)
 
 
 ## TODO
