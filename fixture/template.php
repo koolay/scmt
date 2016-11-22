@@ -17,7 +17,6 @@ function help($param)
  * @apiVersion 1.0.0
  * @api {get} /mall/product/:id get detail of product
  * @apiGroup product
- * @apiName mall.product.get
  * @apiParam query {string{..32}} id id of product
  * @apiResponseRef /fixture/result.json
  * @apiResponse 200 {
@@ -34,7 +33,6 @@ function actionProductDetail($id, $name)
 /**
  * @apiVersion 1.0.0
  * @api {delete} /mall/product/:id delete product
- * @apiName mall.product.delete
  * @apiGroup product
  * @apiParam query {string{..32}} id id of product
  * @apiResponseRef /fixture/result.json
@@ -49,7 +47,6 @@ function actionDeleteProduct($id, $name)
 /**
  * @apiVersion 1.0.0
  * @api {get} /mall/products get list products
- * @apiName mall.product.list
  * @apiGroup product
  * @apiParam query {integer{1-}} [page=1] pageIndex
  * @apiResponseRef /fixture/result.json
@@ -69,7 +66,6 @@ function actionProductList()
  * @apiVersion 1.0.0
  * @api {post} /mall/products add new product, and return id
  * @apiGroup product
- * @apiName mall.product.create
  * @apiParam formData {integer{100-200}} amount=123 amount of products
  * @apiParam formData {string{3..50}} name name of product
  * @apiParam formData {number{1-}} [price=101.2] price of product
@@ -99,7 +95,6 @@ function actionProduct()
  * @apiVersion 1.0.0
  * @api {put} /mall/product/:id  update product
  * @apiGroup product
- * @apiName mall.product.update
  * @apiParam query {string{..32}} id id of product
  * @apiParam formData {string{3..50}} [name] name of product
  * @apiParam formData {number{1-}} [price] price of product

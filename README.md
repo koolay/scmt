@@ -113,16 +113,6 @@ api分组或所属模块
 |:-----------|:------------|
 | name | 模块名称　|
 
-**@apiDescription <a name="apiDescription">**
-
-api描述
-
-> @apiDescription text
-
-| Name          | Description |
-|:-----------|:------------|
-| text | api描述　|
-
 
 **@apiParam <a name="apiParam">**
 
