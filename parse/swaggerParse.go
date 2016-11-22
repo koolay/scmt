@@ -31,11 +31,10 @@ func (parser *Parser) Parse(sourceCode string) {
 		operate := spec.Operation{}
 		operate.Description = apiTitle
 		apiTag := parser.parseApiTag(comment)
-		apiName := parser.parseApiName(comment)
 		params := parser.parseApiParam(comment)
 		responses := parser.parseResponse(comment)
 
-		fmt.Println("---------process API: ", apiName, "---------")
+		fmt.Println("---------process API: ", apiTitle, "---------")
 
 		for _, param := range params {
 			swaggerParam := spec.Parameter{}

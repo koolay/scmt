@@ -16,7 +16,8 @@ import (
 // var reCommentBlock = regexp.MustCompile(`/\*(.|[\r\n])*?\*/`)
 var reApi = regexp.MustCompile(`@api\s\{(?P<method>\w+)\}\s+(?P<path>(/[^\s]+)+)(\s(?P<title>[^\*\r\n]+))?`)
 var reApiModule = regexp.MustCompile(`@apiGroup\s+(?P<module>[^\r\n\s]+)`)
-var reApiName = regexp.MustCompile(`@apiName\s+(?P<name>[^\r\n]+)`)
+
+//var reApiName = regexp.MustCompile(`@apiName\s+(?P<name>[^\r\n]+)`)
 var reApiVersion = regexp.MustCompile(`@apiVersion\s+(?P<name>[^\r\n]+)`)
 var reApiParam = regexp.MustCompile(`@apiParam\s+(?P<name>[^\r\n]+)`)
 var reApiParamGroup = regexp.MustCompile(`(?P<in>[a-zA-Z]+)\s+(?P<type>\{.+\})\s+(?P<field>(\[[^\s=\[]+\=?[^\=\]]+\])|([^\s=\[]+\=?[^\s\=\]]+))(\s+(?P<description>[^\r\n]*))?`)
@@ -32,7 +33,7 @@ type Parser struct {
 	Swagger *spec.Swagger
 }
 
-var commentRegexPatternMap = map[string]string{"php": `/\*(.|[\r\n])*?\*/`, "python": `\"\"\"(.|[\r\n])*?\"\"\"`}
+var commentRegexPatternMap = map[string]string{"javascript": `/\*(.|[\r\n])*?\*/`, "php": `/\*(.|[\r\n])*?\*/`, "python": `\"\"\"(.|[\r\n])*?\"\"\"`}
 
 func NewParser(lang string) (parser *Parser) {
 	parser = &Parser{lang: lang, commentRegexPattern: commentRegexPatternMap[lang]}
@@ -98,15 +99,6 @@ func (parser *Parser) parseApi(sourceCode string) (Api, error) {
 
 func (parser *Parser) parseApiVersion(sourceCode string) string {
 	match := reApiVersion.FindStringSubmatch(sourceCode)
-	if len(match) > 1 {
-		return match[1]
-	} else {
-		return ""
-	}
-}
-
-func (parser *Parser) parseApiName(sourceCode string) string {
-	match := reApiName.FindStringSubmatch(sourceCode)
 	if len(match) > 1 {
 		return match[1]
 	} else {

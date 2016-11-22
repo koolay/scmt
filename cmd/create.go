@@ -49,7 +49,7 @@ var (
 	httpHeaders []string
 )
 
-var langMap = map[string]string{"php": ".php", "python": ".py"}
+var langMap = map[string]string{"php": ".php", "python": ".py", "javascript": ".js"}
 
 // createCmd represents the create command
 var createCmd = &cobra.Command{
