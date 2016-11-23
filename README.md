@@ -79,9 +79,9 @@ Flags:
 
 ### 代码注释格式
 
-- php语言请[参考](https://git.mysoft.com.cn/mic/swagger-cli/blob/master/fixture/template.php)
+- php语言请[参考](fixture/template.php)
 
-- python语言请[参考](https://git.mysoft.com.cn/mic/swagger-cli/blob/master/fixture/template.py)
+- python语言请[参考](fixture/template.py)
 
   js与php类似
 
