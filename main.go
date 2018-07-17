@@ -14,8 +14,18 @@
 
 package main
 
-import "github.com/koolay/scmt/cmd"
+import (
+	"fmt"
+
+	"github.com/koolay/scmt/cmd"
+)
+
+var (
+	buildTime string
+	version   string
+)
 
 func main() {
+	cmd.LongVersion = fmt.Sprintf("%s-%s", version, buildTime)
 	cmd.Execute()
 }

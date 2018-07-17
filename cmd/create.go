@@ -15,11 +15,9 @@
 package cmd
 
 import (
-	"errors"
 	"fmt"
 	"io/ioutil"
 	"log"
-	"os"
 
 	"github.com/koolay/scmt/parse"
 	"github.com/spf13/cobra"
@@ -139,10 +137,6 @@ func initConfig() {
 	viper.AddConfigPath("$HOME") // adding home directory as first search path
 	viper.AutomaticEnv()         // read in environment variables that match
 
-	if err := verifyArgs(); err != nil {
-		fmt.Println(err.Error())
-		os.Exit(0)
-	}
 	viper.Set("sources", sources)
 	viper.Set("lang", lang)
 	viper.Set("output", outputs)
@@ -154,16 +148,4 @@ func initConfig() {
 	if err := viper.ReadInConfig(); err == nil {
 		fmt.Println("Using config file:", viper.ConfigFileUsed())
 	}
-}
-
-func verifyArgs() error {
-
-	if sources == nil {
-		return errors.New("Miss args of sources")
-	}
-
-	if lang == "" {
-		return errors.New("Miss args of lang")
-	}
-	return nil
 }
